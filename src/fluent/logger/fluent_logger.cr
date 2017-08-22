@@ -1,4 +1,5 @@
 #require "msgpack"
+require "./logger_base"
 require "socket"
 
 module Fluent::Logger
@@ -27,9 +28,9 @@ module Fluent::Logger
 
   class FluentLogger < LoggerBase
     BUFFER_LIMIT = 8*1024*1024
-    RECONNECT_WAIT = 0.5
-    RECONNECT_WAIT_INCR_RATE = 1.5
-    RECONNECT_WAIT_MAX = 60
+    #RECONNECT_WAIT = 0.5
+    #RECONNECT_WAIT_INCR_RATE = 1.5
+    #RECONNECT_WAIT_MAX = 60
 
     private getter conn : Socket | Nil
 

@@ -1,2 +1,2 @@
 require "spec"
-require "../src/fluent-logger-crystal"
+require "../src/fluent_logger"

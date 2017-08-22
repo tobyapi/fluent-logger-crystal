@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Fluent::Logger::Crystal do
+describe Fluent::Logger do
   # TODO: Write tests
 
   it "works" do
