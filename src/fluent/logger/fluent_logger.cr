@@ -1,4 +1,4 @@
-#require "msgpack"
+require "msgpack"
 require "./logger_base"
 require "socket"
 
@@ -47,16 +47,16 @@ module Fluent::Logger
 
     def post_with_time(tag, map, time)
       tag = "#{@tag_prefix}.#{tag}" if @tag_prefix
-      write [tag, time.to_i, map]
+      write [tag, time.second, map]
     end
 
     def write(msg)
       begin
-        data = to_msgpack msg
+        data = msg.to_msgpack
         send_data data
         true
       rescue e
-        @conn.close if connect?
+        @conn.as(Socket).close if connect?
         @conn = nil
         false
       end
@@ -66,21 +66,26 @@ module Fluent::Logger
       unless connect?
         connect!
       end
-      @conn.write data
+      @conn.as(Socket).write data
       true
     end
 
     def create_socket!
-      @conn = if @socket_path
-        UNIXSocket.new(@socket_path)
+      path = @socket_path
+      @conn = if !path.nil?
+        UNIXSocket.new(path)
       else
         TCPSocket.new(@host, @port)
       end
     end
-
+    
+    def connect?
+      !@conn.nil? && !@conn.as(Socket).closed?
+    end
+         
     def connect!
       create_socket!
-      @conn.sync = true
+      @conn.as(Socket).sync = true if !@conn.nil?
     rescue e
       raise e
     end

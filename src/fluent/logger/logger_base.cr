@@ -4,7 +4,7 @@ module Fluent::Logger
       Fluent::Logger.open(self, *args, &block)
     end
 
-    def post(tap, map)
+    def post(tag, map)
       post_with_time tag, map, Time.now
     end
 
