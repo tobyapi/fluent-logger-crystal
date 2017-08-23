@@ -1,6 +1,6 @@
 # fluent-logger-crystal
 
-A Fluentd client for Crystal.
+A [Fluentd](https://www.fluentd.org/) client for Crystal.
 
 ## Installation
 
@@ -23,10 +23,6 @@ log.post("myapp.access", {"agent" => "foo"})
 
 # output: myapp.access {"agent":"foo"}
 ```
-
-## Development
-
-TODO: Write development instructions here
 
 ## Contributing
 
