@@ -14,8 +14,14 @@ dependencies:
 
 ## Usage
 
+### Simple
 ```crystal
-require "fluent-logger"
+require "fluent_logger"
+
+log = Fluent::Logger::FluentLogger.new
+unless log.post("myapp.access", {"agent" => "foo"})
+
+# output: myapp.access {"agent":"foo"}
 ```
 
 ## Development
@@ -33,3 +39,6 @@ TODO: Write development instructions here
 ## Contributors
 
 - [TobiasGSmollett](https://github.com/TobiasGSmollett)  - creator, maintainer
+
+## Thanks
+Thanks to FURUHASHI Sadayuki for their awesome work on [fluent-logger-ruby](https://github.com/fluent/fluent-logger-ruby).

@@ -32,13 +32,13 @@ module Fluent::Logger
     #RECONNECT_WAIT_INCR_RATE = 1.5
     #RECONNECT_WAIT_MAX = 60
 
-    private getter conn : Socket | Nil
+    private getter conn : Socket?
 
     def initialize(
-        @tag_prefix : String | Nil = nil,
+        @tag_prefix : String? = nil,
         @host = "localhost",
         @port = 24224,
-        @socket_path : String | Nil = nil,
+        @socket_path : String? = nil,
         @limit : Int32 = BUFFER_LIMIT
       )
       @time_format = "%b %e %H:%M:%S"
