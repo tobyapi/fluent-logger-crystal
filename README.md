@@ -16,10 +16,10 @@ dependencies:
 
 ### Simple
 ```crystal
-require "fluent_logger"
+require "fluent-logger-crystal"
 
 log = Fluent::Logger::FluentLogger.new
-unless log.post("myapp.access", {"agent" => "foo"})
+log.post("myapp.access", {"agent" => "foo"})
 
 # output: myapp.access {"agent":"foo"}
 ```
