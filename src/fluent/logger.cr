@@ -24,8 +24,8 @@ module Fluent::Logger
     end
   end
 
-  def post(tag,map)
-    default.post(tag,map)
+  def post(tag, map)
+    default.post tag, map
   end
 
   def default
