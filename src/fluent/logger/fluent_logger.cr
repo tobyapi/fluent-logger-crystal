@@ -42,12 +42,22 @@ module Fluent::Logger
         @limit : Int32 = BUFFER_LIMIT
       )
       @time_format = "%b %e %H:%M:%S"
-
+      @pending = nil
+      @last_error = Hash(UInt64, Exception).new
     end
 
     def post_with_time(tag, map, time)
       tag = "#{@tag_prefix}.#{tag}" if @tag_prefix
       write [tag, time.second, map]
+    end
+
+    def close
+      if @pending
+        send_data @pending
+      end
+      @conn.close if connect?
+      @conn = nil
+      @pending = nil
     end
 
     def write(msg)
@@ -78,16 +88,20 @@ module Fluent::Logger
         TCPSocket.new(@host, @port)
       end
     end
-    
+
     def connect?
       !@conn.nil? && !@conn.as(Socket).closed?
     end
-         
+
     def connect!
       create_socket!
       @conn.as(Socket).sync = true if !@conn.nil?
     rescue e
       raise e
+    end
+
+    def set_last_error(e)
+      @last_error[Fiber.current.object_id] = e
     end
   end
 end
