@@ -37,4 +37,4 @@ log.post("myapp.access", {"agent" => "foo"})
 - [TobiasGSmollett](https://github.com/TobiasGSmollett)  - creator, maintainer
 
 ## Thanks
-Thanks to FURUHASHI Sadayuki for their awesome work on [fluent-logger-ruby](https://github.com/fluent/fluent-logger-ruby).
+Thanks to FURUHASHI Sadayuki for his awesome work on [fluent-logger-ruby](https://github.com/fluent/fluent-logger-ruby).
