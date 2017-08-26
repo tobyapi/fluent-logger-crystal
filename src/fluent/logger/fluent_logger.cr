@@ -42,7 +42,7 @@ module Fluent::Logger
         @limit : Int32 = BUFFER_LIMIT
       )
       @time_format = "%b %e %H:%M:%S"
-      @pending = nil
+      #@pending = nil
       @last_error = Hash(UInt64, Exception).new
     end
 
@@ -52,12 +52,12 @@ module Fluent::Logger
     end
 
     def close
-      if @pending
-        send_data @pending
-      end
+      #if !@pending.nil?
+      #  send_data @pending
+      #end
       @conn.close if connect?
       @conn = nil
-      @pending = nil
+      #@pending = nil
     end
 
     def write(msg)
