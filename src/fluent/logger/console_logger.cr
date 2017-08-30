@@ -6,7 +6,7 @@ module Fluent::Logger
   
   class ConsoleLogger < LoggerBase
     
-    @io : IO | File
+    @io : IO | File | String
     @on_reopen : Proc(Nil)
     
     def initialize(output)
@@ -28,11 +28,11 @@ module Fluent::Logger
     end
 
     def post_text(text)
-      @io.puts text
+      @io.as(IO | File).puts text
     end
 
     def close
-      @io.close unless @io == STDOUT
+      @io.as(IO | File).close unless @io == STDOUT
       self
     end
      
