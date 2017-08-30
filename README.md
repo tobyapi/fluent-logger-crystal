@@ -8,7 +8,7 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  fluent-logger-crystal:
+  fluent-logger:
     github: TobiasGSmollett/fluent-logger-crystal
 ```
 
@@ -16,7 +16,7 @@ dependencies:
 
 ### Simple
 ```crystal
-require "fluent-logger-crystal"
+require "fluent-logger"
 
 log = Fluent::Logger::FluentLogger.new
 log.post("myapp.access", {"agent" => "foo"})
