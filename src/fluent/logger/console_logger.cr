@@ -1,21 +1,25 @@
 require "./logger_base"
 require "file"
+require "json"
 
 module Fluent::Logger
   
   class ConsoleLogger < LoggerBase
+    
+    @io : IO | File
+    @on_reopen : Proc(Nil)
+    
     def initialize(output)
       @time_format = "%b %e %H:%M:%S"
-
+      
       if output.is_a?(String)
-        File.open(output, mode: "a")
-        @io = File.open(output, "a")
-        @on_reopen = -> { @io.reopen(output, "a") }
-      elsif out.respond_to?(:write)
-        @io = out
+        @io = File.open(output.as(String), mode: "a")
+        @on_reopen = -> { @io = File.open(output.as(String), mode: "a"); nil }
+      elsif output.responds_to?(:write)
+        @io = output
         @on_reopen = -> { }
       else
-        raise "Invalid output: #{out.inspect}"
+        raise "Invalid output: #{output.inspect}"
       end
     end
     
@@ -33,10 +37,10 @@ module Fluent::Logger
     end
      
     def post_with_time(tag, map, time)
-      a = [time.strftime(@time_format), " ", tag, ":"]
+      a = [time.to_s(@time_format), " ", tag, ":"]
       map.each do |k, v|
         a << " #{k}="
-        a << JSON.dump(v)
+        a << v.to_json
       end
       post_text a.join
     end
