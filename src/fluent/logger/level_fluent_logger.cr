@@ -12,19 +12,22 @@ module Fluent::Logger
       host = "localhost",
       port = 24224,
       socket_path : String? = nil,
-      limit : Int32 = BUFFER_LIMIT)
+      limit : Int32 = BUFFER_LIMIT,
+      @progname = String.empty)
       @level = ::Logger::DEBUG
-      @default_formatter = -> do |severity, datetime, progname, message|
+      @closed = nil
+      @mutex = nil
+      @formatter = -> (severity, datetime, progname, message){
         map = { level: severity }
         map[:message] = message if message
         map[:progname] = progname if progname
         map
-      end
+      }
       @fluent_logger = FluentLogger.new(tag_prefix, host, port, socket_path, limit)
     end
 
-    def add(serverity, message = nil, programname = nil)
-      severity ||= UNKNOWN
+    def add(severity, message = nil, progname = nil)
+      severity ||= ::Logger::UNKNOWN
       return true if severity < @level
       progname ||= @progname
       if message.nil?
@@ -36,8 +39,8 @@ module Fluent::Logger
       true
     end
 
-    def add(serverity, message = nil, programname = nil, &block)
-      severity ||= UNKNOWN
+    def add(severity, message = nil, progname = nil, &block)
+      severity ||= ::Logger::UNKNOWN
       return true if severity < @level
       progname ||= @progname
       message = yield if message.nil?
