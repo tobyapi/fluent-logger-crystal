@@ -6,29 +6,29 @@ Spec2.describe Fluent::Logger::FluentLogger do
     ::Logger.new(@logger_io)
   }
 
-  let(:logger){
-    Fluent::Logger::FluentLogger.new "logger-test", logger_config
-  }
-
   let(:logger_with_nanosec) {
-    Fluent::Logger::FluentLogger.new("logger-test", logger_config.merge({ :nanosecond_precision => true }))
+    Fluent::Logger::FluentLogger.new
   }
 
   let(:buffer_overflow_handler){ nil }
 
   let(:logger_io){ @logger_io }
 
-  let(:logger_config){
-    {
-      :host => "loclahost",
-      :port => 24224,
-      :logger => internal_logger,
-      :buffer_overflow_handler => buffer_overflow_handler
-    }
-  }
-
   context "running fluentd" do
     context "post" do
+      it("success") {
+        Timecop.freeze(Time.now) do
+          fork do
+            server = MockServer.new "tcp://localhost:24224"
+            result = server.run
+            expect(result).to eq ["tag", Time.now.second, {"a" => "b"}]
+          end
+          
+          fork do
+            Fluent::Logger::FluentLogger.new.post("tag", {"a" => "b"})
+          end
+        end
+      }
     end
   end
 end

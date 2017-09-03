@@ -32,7 +32,7 @@ module Fluent::Logger
     #RECONNECT_WAIT_INCR_RATE = 1.5
     #RECONNECT_WAIT_MAX = 60
 
-    private getter conn : Socket?
+    getter conn : Socket?
 
     def initialize(
         @tag_prefix : String? = nil,
@@ -97,6 +97,7 @@ module Fluent::Logger
       create_socket!
       @conn.as(Socket).sync = true if !@conn.nil?
     rescue e
+      puts e.message
       raise e
     end
 
