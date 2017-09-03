@@ -1,4 +1,5 @@
 # fluent-logger-crystal
+[![Build Status](https://travis-ci.org/TobiasGSmollett/fluent-logger-crystal.svg?branch=master)](https://travis-ci.org/TobiasGSmollett/fluent-logger-crystal)
 
 A [Fluentd](https://www.fluentd.org/) client for Crystal.
 

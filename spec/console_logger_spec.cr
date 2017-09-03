@@ -3,7 +3,7 @@ require "timecop"
 require "tempfile"
 
 Spec2.describe Fluent::Logger::ConsoleLogger do
-  before { Timecop.freeze Time.new(2008, 9, 1, 10, 5, 0).to_local }
+  before { Timecop.freeze Time.new(2008, 9, 1, 10, 5, 0) }
 
   after { Timecop.return }
   
@@ -20,7 +20,7 @@ Spec2.describe Fluent::Logger::ConsoleLogger do
       end
       
       it("read")do
-        expect(subject.to_s).to eq "Sep  1 19:05:00 example: foo=\"bar\"\n"
+        expect(subject.to_s).to eq "Sep  1 10:05:00 example: foo=\"bar\"\n"
       end
     end
   end
@@ -43,7 +43,7 @@ Spec2.describe Fluent::Logger::ConsoleLogger do
         logger.post("example", {:foo => :bar})
         logger.close
       end
-      it("read")  { expect(subject).to eq "Sep  1 19:05:00 example: foo=\"bar\"" }
+      it("read")  { expect(subject).to eq "Sep  1 10:05:00 example: foo=\"bar\"" }
     end
 
     context "reopen" do
@@ -52,7 +52,7 @@ Spec2.describe Fluent::Logger::ConsoleLogger do
         logger.close
         logger.reopen!
       end
-      it("read")  { expect(subject).to eq "Sep  1 19:05:00 example: foo=\"baz\"" }
+      it("read")  { expect(subject).to eq "Sep  1 10:05:00 example: foo=\"baz\"" }
     end
   end
 
