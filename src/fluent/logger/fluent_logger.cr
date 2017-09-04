@@ -83,7 +83,7 @@ module Fluent::Logger
     def create_socket!
       path = @socket_path
       @conn = if !path.nil?
-        UNIXSocket.new(path)
+        UNIXSocket.new(path.to_s.sub(/^unix:\/\//, ""))
       else
         TCPSocket.new(@host, @port)
       end
@@ -97,7 +97,6 @@ module Fluent::Logger
       create_socket!
       @conn.as(Socket).sync = true if !@conn.nil?
     rescue e
-      puts e.message
       raise e
     end
 

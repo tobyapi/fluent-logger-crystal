@@ -6,11 +6,12 @@ class MockServer
   
   @wait = 0.3
   @channel = Channel(Array(MessagePack::Type)).new
-    
-  def initialize(raw_url : String)
+  @server : TCPServer | UNIXServer
+  
+  def initialize(@raw_url : String)
     @url = URI.parse raw_url
     if @url.scheme == "unix"
-      raise "not implementation"
+      @server = UNIXServer.new @raw_url.to_s.sub(/^unix:\/\//, "")
     else
       @server = TCPServer.new @url.host.as(String), @url.port.as(Int32)
     end
@@ -25,7 +26,8 @@ class MockServer
   end
   
   def socket_path
-    @url.path
+    return @url.path if @raw_url.nil?
+    @raw_url
   end
       
   def queue
@@ -39,10 +41,14 @@ class MockServer
   def startup
     spawn do
       loop do
-        @server.accept do |socket|
-          message = socket.gets.as(String).to_slice
-          @channel.send(Array(MessagePack::Type).from_msgpack(message))
+        socket = if @server.is_a?(UNIXServer)
+          @server.as(UNIXServer).accept?
+          
+        elsif @server.is_a?(TCPServer)
+          @server.as(TCPServer).accept?
         end
+        message = socket.as(Socket).gets.as(String).to_slice
+        @channel.send(Array(MessagePack::Type).from_msgpack(message))
       end
     end
   end
@@ -51,5 +57,6 @@ class MockServer
   end
   
   def shutdown
+    @server.close
   end
 end
