@@ -42,7 +42,7 @@ module Fluent::Logger
         @limit : Int32 = BUFFER_LIMIT
       )
       @time_format = "%b %e %H:%M:%S"
-      #@pending = nil
+      @pending = [] of MessagePack::Type
       @last_error = Hash(UInt64, Exception).new
     end
 
@@ -52,18 +52,17 @@ module Fluent::Logger
     end
 
     def close
-      #if !@pending.nil?
-      #  send_data @pending
-      #end
+      send_data @pending if !@pending.empty?
       @conn.close if connect?
       @conn = nil
-      #@pending = nil
+      @pending.clear
     end
 
     def write(msg)
       begin
-        data = msg.to_msgpack
-        send_data data
+        @pending << msg
+        send_data @pending.to_msgpack
+        @pending.clear
         true
       rescue e
         @conn.as(Socket).close if connect?
@@ -100,7 +99,11 @@ module Fluent::Logger
       raise e
     end
 
-    def set_last_error(e)
+    def last_error
+      @last_error[Fiber.current.object_id]
+    end
+
+    def last_error=(e)
       @last_error[Fiber.current.object_id] = e
     end
   end
