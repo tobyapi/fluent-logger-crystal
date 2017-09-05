@@ -58,7 +58,32 @@ module Fluent::Logger
       @pending.clear
     end
 
-    def write(msg)
+    def connect?
+      !@conn.nil? && !@conn.as(Socket).closed?
+    end
+
+    def create_socket!
+      path = @socket_path
+      @conn = if !path.nil?
+        UNIXSocket.new(path.to_s.sub(/^unix:\/\//, ""))
+      else
+        TCPSocket.new(@host, @port)
+      end
+    end
+
+    def pending_bytesize
+      @pending.to_msgpack.bytesize
+    end
+
+    def last_error
+      @last_error[Fiber.current.object_id]
+    end
+
+    def last_error=(e)
+      @last_error[Fiber.current.object_id] = e
+    end
+
+    private def write(msg)
       begin
         @pending << msg
         send_data @pending.to_msgpack
@@ -71,7 +96,7 @@ module Fluent::Logger
       end
     end
 
-    def send_data(data)
+    private def send_data(data)
       unless connect?
         connect!
       end
@@ -79,32 +104,11 @@ module Fluent::Logger
       true
     end
 
-    def create_socket!
-      path = @socket_path
-      @conn = if !path.nil?
-        UNIXSocket.new(path.to_s.sub(/^unix:\/\//, ""))
-      else
-        TCPSocket.new(@host, @port)
-      end
-    end
-
-    def connect?
-      !@conn.nil? && !@conn.as(Socket).closed?
-    end
-
-    def connect!
+    private def connect!
       create_socket!
       @conn.as(Socket).sync = true if !@conn.nil?
     rescue e
       raise e
-    end
-
-    def last_error
-      @last_error[Fiber.current.object_id]
-    end
-
-    def last_error=(e)
-      @last_error[Fiber.current.object_id] = e
     end
   end
 end
